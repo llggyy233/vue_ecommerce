@@ -12,6 +12,12 @@ import axios from 'axios'
 Vue.config.productionTip = false
 // 设置默认地址
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+// 配置请求拦截
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  console.log(config)
+  return config
+})
 // 将axios挂载到原型对象
 Vue.prototype.$axios = axios
 
