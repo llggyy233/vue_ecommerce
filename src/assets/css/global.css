@@ -5,3 +5,16 @@ html,body,#app{
     padding: 0;
 
 }
+
+.el-breadcrumb{
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.el-card{
+    box-shadow: 0 1px 1px (0, 0, 0, 0.15);
+}
+
+.el-table{
+    margin-top: 10px;
+}

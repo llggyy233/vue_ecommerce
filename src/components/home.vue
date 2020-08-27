@@ -23,6 +23,8 @@
           unique-opened
           :collapse="isCollapse"
           :collapse-transition="false"
+          router
+          :default-active="activepath"
         >
           <!--一级菜单-->
           <el-submenu :index="items.id + ''" v-for="items in menulist" :key="items.id">
@@ -34,7 +36,7 @@
             </template>
             <!--二级菜单-->
             <el-menu-item-group>
-              <el-menu-item :index="subitems.id + ''" v-for="subitems in items.children" :key="subitems.id">
+              <el-menu-item :index="'/' + subitems.path" v-for="subitems in items.children" :key="subitems.id" @click="saveActivePath('/' + subitems.path)">
                 <!--图标-->
                 <i class="el-icon-menu"></i>
                 <!--文本-->
@@ -45,7 +47,10 @@
         </el-menu>
       </el-aside>
       <!-- 主体区域 -->
-      <el-main>Main</el-main>
+      <el-main>
+      <!--插入子组件路由占位符-->
+      <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -62,12 +67,14 @@ export default {
         102: 'iconfont icon-danju',
         145: 'iconfont icon-baobiao'
       },
-      isCollapse: false
+      isCollapse: false,
+      activepath: ''
     }
   },
   // 实例创建完成后被立即调用
   created() {
     this.getmenulist()
+    this.activepath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout() {
@@ -82,6 +89,11 @@ export default {
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse
+    },
+    saveActivePath(path) {
+      window.sessionStorage.setItem('activePath', path)
+      this.activepath = path
+      // console.log(this.activepath)
     }
   }
 }
