@@ -8,6 +8,7 @@ import './assets/fonts/iconfont.css'
 import './assets/css/global.css'
 // 导入axios
 import axios from 'axios'
+import treetable from 'vue-table-with-tree-grid'
 
 Vue.config.productionTip = false
 // 设置默认地址
@@ -20,6 +21,7 @@ axios.interceptors.request.use(config => {
 })
 // 将axios挂载到原型对象
 Vue.prototype.$axios = axios
+Vue.component('tree-table', treetable)
 
 new Vue({
   router,
