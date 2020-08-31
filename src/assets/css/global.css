@@ -18,3 +18,8 @@ html,body,#app{
 .el-table{
     margin-top: 10px;
 }
+
+/* 解决级联选择器无滚动条，样式超出屏幕 */
+.el-cascader-panel{
+    height: 200px;
+}
