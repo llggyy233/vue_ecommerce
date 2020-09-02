@@ -148,7 +148,9 @@ export default {
         // 选中属性的子属性
         children: 'children',
         // 指定级联选择器展开方法
-        expandTrigger: 'hover'
+        expandTrigger: 'hover',
+        // 允许选择某一级菜单
+        checkStrictly: true
       },
       // 选定属性的ID值（父级ID和子级ID）
       choosedCate: []
