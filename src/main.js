@@ -23,6 +23,18 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$axios = axios
 Vue.component('tree-table', treetable)
 
+// 全局注册数据过滤器
+Vue.filter('dateFilter', function(originVal) {
+  const dt = new Date(originVal)
+  const y = dt.getFullYear()
+  const mm = (dt.getMonth() + 1 + '').padStart(2, '0')
+  const dd = (dt.getDay() + 1 + '').padStart(2, '0')
+  const hh = (dt.getHours() + '').padStart(2, '0')
+  const min = (dt.getMinutes() + '').padStart(2, '0')
+  const ss = (dt.getSeconds() + '').padStart(2, '0')
+  return `${y}-${mm}-${dd} ${hh}:${min}:${ss}`
+})
+
 new Vue({
   router,
   render: h => h(App)

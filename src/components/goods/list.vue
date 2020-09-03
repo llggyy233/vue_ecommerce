@@ -17,6 +17,22 @@
           <el-button type="primary">添加商品</el-button>
         </el-col>
       </el-row>
+      <el-table :data="goodList" border stripe>
+        <el-table-column type="index" label="#"></el-table-column>
+        <el-table-column label="商品名称" prop="goods_name"></el-table-column>
+        <el-table-column label="商品价格（元）" prop="goods_price" width="120px"></el-table-column>
+        <el-table-column label="创建时间" prop="add_time" width="170px">
+          <template slot-scope="scope">
+            {{scope.row.add_time | dateFilter}}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="130px">
+          <template>
+            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+            <el-button type="success" icon="el-icon-location" size="mini"></el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
