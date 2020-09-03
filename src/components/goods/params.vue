@@ -27,8 +27,8 @@
       </el-row>
       <!--Tab 标签-->
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
-        <el-tab-pane label="用户管理" name="many">
-          <el-button type="primary" :disabled="isDisableed" @click="addDialogVisible = true">添加用户</el-button>
+        <el-tab-pane label="动态参数" name="many">
+          <el-button type="primary" :disabled="isDisableed" @click="addDialogVisible = true">添加参数</el-button>
           <!--动态参数表格-->
           <el-table
             :data="activeData"
@@ -37,6 +37,21 @@
             <el-table-column
               type="expand"
               width="180">
+              <template slot-scope="scope">
+                <el-tag v-for="(items, id) in scope.row.attr_vals" :key="id" closable @close="handleClose(id, scope.row)">{{items}}</el-tag>
+                <!--添加新标签-->
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="saveTagInputRef"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                  >
+                </el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+              </template>
             </el-table-column>
             <el-table-column
               type="index"
@@ -53,7 +68,7 @@
               width="180">
               <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)">编辑</el-button>
-                <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+                <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeParams(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -65,9 +80,24 @@
             :data="staticData"
             style="width: 100%"
             stripe>
-            <el-table-column
+                        <el-table-column
               type="expand"
               width="180">
+              <template slot-scope="scope">
+                <el-tag v-for="(items, id) in scope.row.attr_vals" :key="id" closable @close="handleClose(id, scope.row)">{{items}}</el-tag>
+                <!--添加新标签-->
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="saveTagInputRef"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                  >
+                </el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+              </template>
             </el-table-column>
             <el-table-column
               type="index"
@@ -84,7 +114,7 @@
               width="180">
               <template slot-scope="scope">
                 <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)">编辑</el-button>
-                <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+                <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeParams(scope.row.attr_id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -182,7 +212,7 @@ export default {
       console.log(res.data)
       this.cateList = res.data
     },
-    // 级联选择器选定项发生改变是触发
+    // 级联选择器选定项发生改变时触发
     handleChange() {
       this.getParamsInfo()
     },
@@ -196,12 +226,22 @@ export default {
       if (this.selectedCate.length !== 3) {
         // 不为三级分类则将该数组清空
         this.selectedCate = []
+        this.activeData = []
+        this.staticData = []
         return
       }
       const { data: res } = await this.$axios.get(`categories/${this.cateID}/attributes`, { params: { sel: this.activeName } })
       if (res.meta.status !== 200) {
         return this.$message.error('请求数据错误')
       }
+      res.data.forEach(item => {
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
+        // 控制是否显示文本框 默认不显示
+        item.inputVisible = false
+        // 文本框输入数据绑定
+        item.inputValue = ''
+      })
+      console.log(res.data)
       if (this.activeName === 'many') {
         this.activeData = res.data
       } else if (this.activeName === 'only') {
@@ -253,6 +293,59 @@ export default {
         this.getParamsInfo()
         this.editDialogVisiable = false
       })
+    },
+    // 删除参数
+    async removeParams(attrid) {
+      // 弹出框 提示用户是否确认删除参数
+      const confirmResult = await this.$confirm('此操作将永久删除该属性, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('以取消删除操作')
+      }
+      const { data: res } = await this.$axios.delete(`categories/${this.cateID}/attributes/${attrid}`)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除属性失败')
+      }
+      this.$message.success('删除属性成功')
+      this.getParamsInfo()
+    },
+    // 添加标签输入框按下回车触发或失去焦点触发
+    async handleInputConfirm(item) {
+      if (item.inputValue.trim().length === 0) {
+        item.inputValue = ''
+        item.inputVisible = false
+        return
+      }
+      // 向数据中加入新标签
+      item.attr_vals.push(item.inputValue)
+      this.saveEditTag(item)
+      item.inputValue = ''
+      item.inputVisible = false
+    },
+    // 点击按钮显示输入框
+    showInput(item) {
+      item.inputVisible = true
+      // 页面重新渲染之后调用回调函数里面的代码  页面重新渲染后会触发$nextTick
+      this.$nextTick(_ => {
+        this.$refs.saveTagInputRef.$refs.input.focus()
+      })
+    },
+    // 删除可选标签
+    handleClose(id, item) {
+      item.attr_vals.splice(id, 1)
+      this.saveEditTag(item)
+    },
+    // 发送数据保存标签的修改
+    async saveEditTag(item) {
+      // 向服务器发送编辑数据
+      const { data: res } = await this.$axios.put(`categories/${this.cateID}/attributes/${item.attr_id}`, { attr_name: item.attr_name, attr_sel: item.attr_sel, attr_vals: item.attr_vals.join(' ') })
+      if (res.meta.status !== 200) {
+        return this.$message.error('修改属性失败')
+      }
+      this.$message.success('修改信息成功')
     }
   },
   computed: {
@@ -286,5 +379,13 @@ export default {
 .cate_options {
   margin: 20px 0;
   font-size: 16px;
+}
+
+.el-tag {
+  margin: 7px;
+}
+
+.input-new-tag {
+  width: 300px;
 }
 </style>
