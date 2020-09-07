@@ -23,3 +23,16 @@ html,body,#app{
 .el-cascader-panel{
     height: 200px;
 }
+
+.el-step__title {
+    font-size: 13px;
+}
+
+/* 在global.css样式中添加富文本编辑器的最小高度 */
+.ql-editor {
+    min-height: 300px;
+}
+/* 给添加商品按钮添加间距 */
+.btnAdd {
+  margin-top: 15px;
+}

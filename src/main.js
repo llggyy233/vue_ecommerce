@@ -9,6 +9,12 @@ import './assets/css/global.css'
 // 导入axios
 import axios from 'axios'
 import treetable from 'vue-table-with-tree-grid'
+// 导入vue-quill-editor（富文本编辑器）
+import VueQuillEditor from 'vue-quill-editor'
+// 导入vue-quill-editor的样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 Vue.config.productionTip = false
 // 设置默认地址
@@ -34,6 +40,9 @@ Vue.filter('dateFilter', function(originVal) {
   const ss = (dt.getSeconds() + '').padStart(2, '0')
   return `${y}-${mm}-${dd} ${hh}:${min}:${ss}`
 })
+
+// 全局注册富文本组件
+Vue.use(VueQuillEditor)
 
 new Vue({
   router,
