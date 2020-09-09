@@ -16,13 +16,25 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+// 导入进度条插件
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
 Vue.config.productionTip = false
 // 设置默认地址
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 // 配置请求拦截
+// 在请求拦截器中显示进度条
 axios.interceptors.request.use(config => {
+  NProgress.start()
   config.headers.Authorization = window.sessionStorage.getItem('token')
   console.log(config)
+  return config
+})
+// 配置响应拦截器
+axios.interceptors.response.use(config => {
+  NProgress.done()
+  NProgress.remove()
   return config
 })
 // 将axios挂载到原型对象

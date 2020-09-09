@@ -68,7 +68,7 @@ export default {
     if (res.meta.status !== 200) {
       return this.$message.error('获取折线图数据失败')
     }
-
+    console.log(res.data)
     // 合并res.data和this.options
     const result = _.merge(res.data, this.options)
 

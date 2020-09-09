@@ -34,7 +34,7 @@
           </template>
         </el-table-column>
         <!--操作按钮区域-->
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="180px">
           <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(scope.row.id)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUser(scope.row.id)"></el-button>
